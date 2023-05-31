@@ -4447,9 +4447,9 @@ void ecs_set_automerge(
  * multiple threads, where each thread gets its own queue, and commands are
  * merged when threads are synchronized.
  *
- * Note that the ecs_set_threads and ecs_set_task_threads functions already create
- * the appropriate number of stages. The set_stage_count() operation is useful 
- * for applications that want to manage their own stages and/or threads.
+ * Note that the ecs_set_threads function already creates the appropriate
+ * number of stages. The set_stage_count() operation is useful for applications that
+ * want to manage their own stages and/or threads.
  * 
  * @param world The world.
  * @param stages The number of stages.
@@ -7641,15 +7641,6 @@ int32_t ecs_table_get_depth(
     const ecs_table_t *table,
     ecs_entity_t rel);
 
-/** Get storage type for table.
- *
- * @param table The table.
- * @return The storage type of the table (components only).
- */
-FLECS_API
-ecs_table_t* ecs_table_get_storage_table(
-    const ecs_table_t *table);
-
 /** Convert index in table type to index in table storage type. */
 FLECS_API
 int32_t ecs_table_type_to_storage_index(
@@ -10549,8 +10540,8 @@ void ecs_run_pipeline(
  * Setting this value to a value higher than 1 will start as many threads and
  * will cause systems to evenly distribute matched entities across threads. The
  * operation may be called multiple times to reconfigure the number of threads
- * used, but never while running a system / pipeline.
- * Calling ecs_set_threads will also end the use of task threads setup with
+ * used, but never while running a system / pipeline. 
+ * Calling ecs_set_threads will also end the use of task threads setup with 
  * ecs_set_task_threads and vice-versa */
 FLECS_API
 void ecs_set_threads(
