@@ -1,6 +1,20 @@
 function(target_default_compile_warnings_c THIS)
+    
+    # clang-cl is identified as clang but consumes msvc warning flags
+    # same for the intel compiler so order is important here
+    if (MSVC)
+        target_compile_options(${THIS} PRIVATE
+                #$<$<CONFIG:RELEASE>:/WX>
+                /W3
+                /w14242 /w14254 /w14263
+                /w14265 /w14287 /we4289
+                /w14296 /w14311 /w14545
+                /w14546 /w14547 /w14549
+                /w14555 /w14619 /w14640
+                /w14826 /w14905 /w14906
+                /w14928)
 
-    if (CMAKE_C_COMPILER_ID STREQUAL "Clang"
+    elseif (CMAKE_C_COMPILER_ID STREQUAL "Clang"
             OR CMAKE_C_COMPILER_ID STREQUAL "AppleClang")
 
         target_compile_options(${THIS} PRIVATE
@@ -27,7 +41,21 @@ function(target_default_compile_warnings_c THIS)
                 -Wsign-conversion
                 -Wdouble-promotion)
 
-    elseif (CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+    
+    else ()
+
+        message(WARNING
+                "No warning settings available for ${CMAKE_C_COMPILER_ID}. ")
+
+    endif ()
+
+endfunction()
+
+function(target_default_compile_warnings_cxx THIS)
+
+    # clang-cl is identified as clang but consumes msvc warning flags
+    # same for the intel compiler so order is important here
+    if (MSVC)
 
         target_compile_options(${THIS} PRIVATE
                 #$<$<CONFIG:RELEASE>:/WX>
@@ -40,18 +68,7 @@ function(target_default_compile_warnings_c THIS)
                 /w14826 /w14905 /w14906
                 /w14928)
 
-    else ()
-
-        message(WARNING
-                "No warning settings available for ${CMAKE_C_COMPILER_ID}. ")
-
-    endif ()
-
-endfunction()
-
-function(target_default_compile_warnings_cxx THIS)
-
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
             OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
 
         target_compile_options(${THIS} PRIVATE
@@ -83,19 +100,6 @@ function(target_default_compile_warnings_cxx THIS)
                 -Wconversion
                 -Wsign-conversion
                 -Wdouble-promotion)
-
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-
-        target_compile_options(${THIS} PRIVATE
-                #$<$<CONFIG:RELEASE>:/WX>
-                /W3
-                /w14242 /w14254 /w14263
-                /w14265 /w14287 /we4289
-                /w14296 /w14311 /w14545
-                /w14546 /w14547 /w14549
-                /w14555 /w14619 /w14640
-                /w14826 /w14905 /w14906
-                /w14928)
 
     else ()
 

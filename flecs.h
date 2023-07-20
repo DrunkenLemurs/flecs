@@ -1,5 +1,5 @@
-// Comment out this line when using as DLL
-#define flecs_STATIC
+// Uncomment out this line when using as DLL
+// #define flecs_EXPORT 0
 /**
  * @file flecs.h
  * @brief Flecs public API.
@@ -554,17 +554,23 @@ extern "C" {
 /* No dependencies */
 
 /* Convenience macro for exporting symbols */
-#ifndef flecs_STATIC
-#if defined(flecs_EXPORTS) && (defined(_MSC_VER) || defined(__MINGW32__))
-  #define FLECS_API __declspec(dllexport)
-#elif defined(flecs_EXPORTS)
-  #define FLECS_API __attribute__((__visibility__("default")))
-#elif defined(_MSC_VER)
-  #define FLECS_API __declspec(dllimport)
+#undef flecs_STATIC
+#if defined(flecs_EXPORTS)
+  #if flecs_EXPORTS
+    #if (defined(_MSC_VER) || defined(__MINGW32__))
+      #define FLECS_API __declspec(dllexport)
+    #else
+      #define FLECS_API __attribute__((__visibility__("default")))
+    #endif
+  #else
+    #if (defined(_MSC_VER) || defined(__MINGW32__))
+      #define FLECS_API __declspec(dllimport)
+    #else 
+      #define FLECS_API
+    #endif
+  #endif
 #else
-  #define FLECS_API
-#endif
-#else
+  #define flecs_STATIC 1
   #define FLECS_API
 #endif
 

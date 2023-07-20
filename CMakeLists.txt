@@ -1,10 +1,8 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.18)
 cmake_policy(SET CMP0063 NEW)
 
 project(flecs LANGUAGES C)
 
-option(FLECS_STATIC "Build static flecs lib" ON)
-option(FLECS_SHARED "Build shared flecs lib" ON)
 option(FLECS_PIC "Compile static flecs lib with position independent code (PIC)" ON)
 
 include(cmake/target_default_compile_warnings.cmake)
@@ -23,9 +21,9 @@ macro(GroupSources curdir)
 	endforeach()
 endmacro()
 
-file(GLOB children RELATIVE ${PROJECT_SOURCE_DIR}/. ${PROJECT_SOURCE_DIR}/./*)
+file(GLOB children RELATIVE ${PROJECT_SOURCE_DIR}/ ${PROJECT_SOURCE_DIR}/*)
 foreach(child ${children})
-	if(IS_DIRECTORY ${PROJECT_SOURCE_DIR}/${curdir}/${child})
+	if(IS_DIRECTORY ${PROJECT_SOURCE_DIR}/${child})
 		GroupSources(${child})
 	endif()
 endforeach()
@@ -35,18 +33,19 @@ file(GLOB_RECURSE SRC src/*.c)
 
 set(FLECS_TARGETS "")
 
-macro(add_flecs_target TARGET CONFIG)
-    add_library(${TARGET} ${CONFIG} ${INC} ${SRC})
+macro(add_flecs_target TARGET)
+    add_library(${TARGET} ${INC} ${SRC})
     add_library(flecs::${TARGET} ALIAS ${TARGET})
 
     target_default_compile_options_c(${TARGET})
     target_default_compile_warnings_c(${TARGET})
 
+    find_package(Thread REQUIRED)
+    find_package(Socket REQUIRED)
+    target_link_libraries(${TARGET} Thread::Thread Socket::Socket)
+
     if(WIN32)
-        target_link_libraries(${TARGET} wsock32 ws2_32)
-    endif()
-    if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-        target_link_libraries(${TARGET} pthread)
+        target_compile_definitions(${TARGET} PRIVATE _CRT_SECURE_NO_WARNINGS)
     endif()
 
     if(FLECS_PIC)
@@ -60,16 +59,7 @@ macro(add_flecs_target TARGET CONFIG)
     list(APPEND FLECS_TARGETS ${TARGET})
 endmacro()
 
-if(FLECS_SHARED)
-    add_flecs_target(flecs SHARED)
-endif()
-
-if(FLECS_STATIC)
-    add_flecs_target(flecs_static STATIC)
-    target_compile_definitions(flecs_static PUBLIC flecs_STATIC)
-endif()
-
-message(STATUS "Targets: ${FLECS_TARGETS}")
+add_flecs_target(flecs)
 
 # define the install steps
 include(GNUInstallDirs)

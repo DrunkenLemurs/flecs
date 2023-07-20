@@ -8,6 +8,7 @@
 #endif
 #include <winsock2.h>
 #include <windows.h>
+#include <stdint.h>
 
 static
 ecs_os_thread_t win_thread_new(
@@ -43,14 +44,20 @@ static
 int32_t win_ainc(
     int32_t *count) 
 {
-    return InterlockedIncrement(count);
+#if LONG_MAX != INT32_MAX
+#error sizeof(LONG) != sizeof(int32_t)
+#endif
+    return InterlockedIncrement((LONG*)count);
 }
 
 static
 int32_t win_adec(
     int32_t *count) 
 {
-    return InterlockedDecrement(count);
+#if LONG_MAX != INT32_MAX
+#error sizeof(LONG) != sizeof(int32_t)
+#endif
+    return InterlockedDecrement((LONG*)count);
 }
 
 static
