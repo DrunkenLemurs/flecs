@@ -40,9 +40,9 @@ macro(add_flecs_target TARGET)
     target_default_compile_options_c(${TARGET})
     target_default_compile_warnings_c(${TARGET})
 
-    find_package(Thread REQUIRED)
+    find_package(Threads REQUIRED)
     find_package(Socket REQUIRED)
-    target_link_libraries(${TARGET} Thread::Thread Socket::Socket)
+    target_link_libraries(${TARGET} Threads::Threads Socket::Socket)
 
     if(WIN32)
         target_compile_definitions(${TARGET} PRIVATE _CRT_SECURE_NO_WARNINGS)
